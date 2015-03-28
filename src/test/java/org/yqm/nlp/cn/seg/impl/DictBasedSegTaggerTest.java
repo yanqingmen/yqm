@@ -3,12 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cn.com.cninfo.nlp.cn.seg.impl;
+package org.yqm.nlp.cn.seg.impl;
 
-import org.yqm.nlp.cn.seg.impl.DictBasedSegTagger;
 import org.yqm.nlp.cn.seg.ISegTagger;
 import org.yqm.nlp.data.reader.DataReader;
-import cn.com.cninfo.nlp.data.reader.StringDataReaderFactory;
+import org.yqm.nlp.data.reader.StringDataReaderFactory;
 import java.util.Arrays;
 import java.util.List;
 import junit.framework.TestCase;

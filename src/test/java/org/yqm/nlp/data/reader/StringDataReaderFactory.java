@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cn.com.cninfo.nlp.data.reader;
+package org.yqm.nlp.data.reader;
 
 import org.yqm.nlp.data.reader.DataReader;
 import org.yqm.nlp.types.Instance;

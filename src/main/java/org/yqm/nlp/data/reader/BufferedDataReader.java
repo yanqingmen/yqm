@@ -1,37 +1,58 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.yqm.nlp.data.reader;
 
-import org.yqm.nlp.types.Instance;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * BufferedDataReader
- * @author huangzixuan
- */
-public class BufferedDataReader extends DataReader {
-    BlockingQueue<Instance> buffer;
-    Producer producer;
-    Instance inst;
+import org.yqm.nlp.types.Instance;
+
+
+public class BufferedDataReader extends DataReader{
+    DataReader reader;
+    BlockingQueue<Instance> queue;
+    DataLoader loader;
+    int bufferSize = 1000;
     
-    class Producer extends Thread {
-        BlockingQueue<Instance> queue;
+    public BufferedDataReader(DataReader reader) {
+        init(reader);
+    }
+
+    public BufferedDataReader(DataReader reader, int bufferSize) {
+        this.bufferSize = bufferSize;
+        init(reader);
+    }
+    
+    private void init(DataReader reader){
+        this.reader = reader;
+        this.queue = new LinkedBlockingQueue<>(this.bufferSize);
+        this.loader = new DataLoader(this.reader, this.queue);
+        new Thread(this.loader).start();
+    }
+    
+    @Override
+    public boolean hasNext() {
+        return !queue.isEmpty();
+    }
+    
+    @Override
+    public Instance next() {
+        return queue.poll();
+    }
+    
+    
+    private class DataLoader implements Runnable {
         DataReader reader;
+        BlockingQueue<Instance> queue;
         
-        public Producer(DataReader reader, BlockingQueue queue) {
+        public DataLoader(DataReader reader, BlockingQueue<Instance> queue) {
             this.reader = reader;
             this.queue = queue;
         }
-        
+
         @Override
         public void run() {
-            while(reader.hasNext()) {
+            while(reader.hasNext()){
                 try {
                     queue.put(reader.next());
                 } catch (InterruptedException ex) {
@@ -40,23 +61,4 @@ public class BufferedDataReader extends DataReader {
             }
         }
     }
-    
-    public BufferedDataReader(DataReader reader) {
-        this.buffer = new LinkedBlockingQueue<>();
-        this.producer = new Producer(reader, buffer);
-    }
-    
-    
-    
-    
-    @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Instance next() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }
